@@ -15,18 +15,33 @@ import java.util.stream.*;
 public class SensorResource {
 
     @GET
-    public Collection<Sensor> getAll(@QueryParam("type") String type) {
-        if (type == null) return DataStore.sensors.values();
-
-        return DataStore.sensors.values().stream()
-                .filter(s -> s.getType().equalsIgnoreCase(type))
-                .collect(Collectors.toList());
+    public Response getAll(@QueryParam("type") String type) {
+        Collection<Sensor> result;
+        if (type == null || type.trim().isEmpty()) {
+            result = DataStore.sensors.values();
+        } else {
+            result = DataStore.sensors.values().stream()
+                    .filter(s -> s.getType() != null && s.getType().equalsIgnoreCase(type))
+                    .collect(Collectors.toList());
+        }
+        return Response.ok(result).build();
     }
 
     @POST
     public Response create(Sensor s) {
+        if (s == null || s.getId() == null || s.getId().trim().isEmpty()) {
+            return Response.status(400).entity("{\"error\":\"Sensor ID is required\"}").build();
+        }
+        if (s.getRoomId() == null || s.getRoomId().trim().isEmpty()) {
+            return Response.status(400).entity("{\"error\":\"Room ID is required\"}").build();
+        }
         if (!DataStore.rooms.containsKey(s.getRoomId())) {
-            throw new LinkedResourceNotFoundException("Room not found");
+            throw new LinkedResourceNotFoundException("Room with id " + s.getRoomId() + " does not exist");
+        }
+
+        // Default status if not provided
+        if (s.getStatus() == null || s.getStatus().trim().isEmpty()) {
+            s.setStatus("ACTIVE");
         }
 
         DataStore.sensors.put(s.getId(), s);

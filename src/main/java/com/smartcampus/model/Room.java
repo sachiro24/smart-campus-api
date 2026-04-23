@@ -1,6 +1,7 @@
 package com.smartcampus.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Room {
     private String id;
@@ -10,14 +11,17 @@ public class Room {
 
     public Room() {}
 
+    // Getters
     public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
     public int getCapacity() { return capacity; }
-    public void setCapacity(int capacity) { this.capacity = capacity; }
-
     public List<String> getSensorIds() { return sensorIds; }
+
+    // Setters
+    public void setId(String id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setCapacity(int capacity) { this.capacity = capacity; }
+    public void setSensorIds(List<String> sensorIds) {
+        this.sensorIds = sensorIds != null ? sensorIds : new ArrayList<>();
+    }
 }

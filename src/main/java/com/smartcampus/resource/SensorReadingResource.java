@@ -6,34 +6,51 @@ import com.smartcampus.exception.SensorUnavailableException;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
+import java.util.UUID;
 import java.util.*;
 
 public class SensorReadingResource {
 
-    private String id;
+    private final String sensorId;
 
-    public SensorReadingResource(String id) {
-        this.id = id;
+    public SensorReadingResource(String sensorId) {
+        this.sensorId = sensorId;
     }
 
     @GET
-    public List<SensorReading> get() {
-        return DataStore.readings.getOrDefault(id, new ArrayList<>());
+    public Response getReadings() {
+        List<SensorReading> readings = DataStore.readings.getOrDefault(sensorId, new ArrayList<>());
+        return Response.ok(readings).build();
     }
 
     @POST
-    public Response add(SensorReading r) {
-        Sensor s = DataStore.sensors.get(id);
-
-        if (s.getStatus().equals("MAINTENANCE")) {
-            throw new SensorUnavailableException("Sensor unavailable");
+    public Response addReading(SensorReading reading) {
+        Sensor sensor = DataStore.sensors.get(sensorId);
+        if (sensor == null) {
+            return Response.status(404)
+                    .entity("{\"error\":\"Sensor with id " + sensorId + " not found\"}")
+                    .build();
         }
 
-        DataStore.readings.putIfAbsent(id, new ArrayList<>());
-        DataStore.readings.get(id).add(r);
+        if ("MAINTENANCE".equalsIgnoreCase(sensor.getStatus())) {
+            throw new SensorUnavailableException("Sensor is in MAINTENANCE mode and cannot accept new readings");
+        }
 
-        s.setCurrentValue(r.getValue());
+        if (reading.getId() == null || reading.getId().trim().isEmpty()) {
+            reading.setId(UUID.randomUUID().toString());
+        }
+        if (reading.getTimestamp() == 0) {
+            reading.setTimestamp(System.currentTimeMillis());
+        }
 
-        return Response.status(201).build();
+        DataStore.readings.putIfAbsent(sensorId, new ArrayList<>());
+        DataStore.readings.get(sensorId).add(reading);
+
+        // Update current value on parent sensor
+        sensor.setCurrentValue(reading.getValue());
+
+        return Response.status(201)
+                .entity("{\"message\":\"Reading added successfully\", \"currentValue\":" + reading.getValue() + "}")
+                .build();
     }
 }
