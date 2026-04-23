@@ -1,6 +1,6 @@
-# Smart Campus REST API (JAX-RS)
+Smart Campus REST API (JAX-RS)
 
-##  Overview
+Overview
 
 This project implements a **RESTful API** for managing a Smart Campus system using **JAX-RS (Jersey)**. The API allows management of:
 
@@ -12,7 +12,7 @@ The system simulates a real-world backend where rooms contain sensors and sensor
 
 ---
 
-##  How to Run the Project
+How to Run the Project
 
 ### 1. Build the project
 
@@ -60,15 +60,15 @@ http://localhost:8080/api/v1
 
 ---
 
-## 🧪 Sample CURL Commands
+Sample CURL Commands
 
-### 1. Get all rooms
+1. Get all rooms
 
 ```bash
 curl -X GET http://localhost:8080/api/v1/rooms
 ```
 
-### 2. Create a room
+2. Create a room
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/rooms \
@@ -76,7 +76,7 @@ curl -X POST http://localhost:8080/api/v1/rooms \
 -d '{"id":"R1","name":"Library","capacity":100}'
 ```
 
-### 3. Create a sensor
+3. Create a sensor
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/sensors \
@@ -190,22 +190,21 @@ Stack traces expose internal system details such as class names and file paths, 
 Filters handle cross-cutting concerns centrally, avoiding repetitive logging code in every method.
 
 ---
+ Error Handling Implemented
 
-## 🔹 Error Handling Implemented
-
-* **409 Conflict** → Room not empty
-* **422 Unprocessable Entity** → Invalid room reference
-* **403 Forbidden** → Sensor in maintenance
-* **500 Internal Server Error** → Unexpected errors
+409 Conflict → Room not empty
+422 Unprocessable Entity → Invalid room reference
+403 Forbidden → Sensor in maintenance
+500 Internal Server Error → Unexpected errors
 
 ---
 
-## 🔹 Logging
+Logging
 
-* Logs all incoming requests (method + URI)
-* Logs all outgoing responses (status code)
+Logs all incoming requests (method + URI)
+Logs all outgoing responses (status code)
 
-##  Conclusion
+Conclusion
 
 This project demonstrates:
 
